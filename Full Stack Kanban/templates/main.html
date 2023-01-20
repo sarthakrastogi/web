@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+      <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+      <title>Kanban App</title>
+   </head>
+   <body>
+      <div class="container" id="kanbanapp">
+         <div class="row">
+               <p>
+               <h1 class="text-center">Kanban Board</h1>
+              <hr>
+
+         </div>
+         <div class="row">
+            <div class="col-xl">
+               <div>
+                  <b-button class="btn btn-dark" @click="showModal('task-creation')">New task</b-button>
+                    <b-button @click="exportAll" class="btn btn-dark" style="float: right;">Export Board</b-button>
+                    <b-button @click="showReport" class="btn btn-dark" style="float: right;">Plot Report</b-button>
+                  <b-modal ref="task-creation" hide-footer title="Add tasks">
+                     <div>
+                        <form action="" @submit.prevent="task_addition_button">
+                           <p>
+                              <label>Title</label>
+                              <input type="text" v-model="title">
+                           <p>
+                              <label>Content</label>
+                              <input type="text" v-model="content">
+                           <p>
+                              <label>Deadline</label>
+                              <input type="text" v-model="deadline">
+                           <p>
+                              <label>Completed or not</label>
+                                <select v-model="completed_flag">
+                                  <option value="False">Task pending</option>
+                                </select>
+                           <p>
+                              <label>List name</label>
+                              <input type="text" v-model="list_id">
+                           <p>
+                              <button class="btn btn-dark">Create task</button>
+                           <p>
+                        </form>
+                     </div>
+                  </b-modal>
+               </div>
+
+               <div>
+                  <b-modal ref="task-updation" hide-footer title="Edit task">
+                     <div>
+                        <form action="" @submit.prevent="onUpdateTask">
+                           <p>
+                              <label><b>Current Task ID</b></label>
+                              <input type="text" v-model="new_id">
+                           <p>
+                               <label>Title</label>
+                              <input type="text" v-model="new_title">
+                           <p>
+                              <label>Content</label>
+                              <input type="text" v-model="new_content">
+                           <p>
+                              <label>Deadline</label>
+                              <input type="text" v-model="new_deadline">
+                           <p>
+                              <label>Completed Flag</label>
+                              <select v-model="new_completed_flag">
+                                  <option value="True">Task completed</option>
+                                  <option value="False">Task pending</option>
+                                </select>
+                           <p>
+                              <label>List name</label>
+                              <input type="text" v-model="new_list_id">
+                           <p>
+                              <button class="btn btn-dark">Save changes</button>
+                           <p>
+                        </form>
+                     </div>
+                  </b-modal>
+               </div>
+            </div>
+         </div>
+         <div>
+            <b-button class="btn btn-dark" @click="showModal('list-creation')">New list</b-button>
+            <b-modal ref="list-creation" hide-footer title="Add Lists">
+               <div>
+                  <form action="" @submit.prevent="list_addition_button">
+                     <p>
+                        <label>List title</label>
+                        <input type="text" v-model="list_title">
+                     <p>
+                        <button class="btn btn-dark">Add List</button>
+                     <p>
+                  </form>
+               </div>
+            </b-modal>
+         </div>
+
+         <div>
+            <b-modal ref="list-updation" hide-footer title="Update List">
+               <div>
+                  <form action="" @submit.prevent="onUpdateList">
+                     <div>
+                        <label>Current list ID</label>
+                        <input type="text" v-model="current_list_id">
+                        <p>
+                        <label>New list name</label>
+                        <input type="text" v-model="new_list_title">
+                     </div>
+                     <p>
+                        <button class="btn btn-dark">Update List</button>
+                  </form>
+               </div>
+            </b-modal>
+         </div>
+
+         <div>
+            <b-modal ref="list-deletion" hide-footer title="Delete List">
+               <div>
+                  <form action="" @submit.prevent="onDeleteList">
+                     <p>
+                        <label for="list_name_for_deletion">Confirm list name to delete:</label>
+                        <p>
+                        <input type="text" v-model="list_name_for_deletion">
+                        <p>
+                        <b>Select what to do with the tasks inside this list:</b>
+                        <p>
+                        <select v-model="what_to_do">
+                            <option value="delete_tasks_in_this_list">Delete the tasks in this list</option>
+                            <option value="move_tasks_to_other_list">Move the tasks in this list to the below list:</option>
+                          </select>
+                          <p>
+                          <label for="list_holding_these_tasks">Put tasks in:</label>
+                          <p>
+                        <input type="text" v-model="list_holding_these_tasks">
+
+                     <p>
+                        <button class="btn btn-dark">Done</button>
+                     <p>
+                  </form>
+               </div>
+            </b-modal>
+         </div>
+
+         <div class="row">
+            <div class="col-xl" v-for="(list, j) in lists">
+               <div class="col-xl">
+                  <table class="table table-bordered">
+                     <thead>
+                        <tr>
+                           <th><b>{ list[0] }. { list[1] }</b></th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr v-for="(task, i) in tasks">
+
+                           <td v-if="task[5] == list[1]">
+                              <b>{task[0]}. {task[1]}</b>
+                              <p>{task[2]}
+                              <p>Deadline: {task[3]}
+                              <p><small>Created at {task[6]}</small>
+                              <p v-if="task[7] != None"><small> Last updated at {task[7]}</small>
+                               <div v-if="task[4] == 'True'" class="alert alert-success">
+                                 <strong>Completed at {task[8]} :)</strong>
+                               </div></p>
+                             <p>
+                               <div v-if="task[4] == 'False'" class="alert alert-warning">
+                                 <strong>Pending :/</strong>
+                               </div></p>
+                              <p>
+                                 <button class="btn btn-dark" @click="deleteTask(task[0])" class="btn btn-sm btn-outline-danger">Delete Task</button>
+                                 <button class="btn btn-dark" @click="editTask(task[0])" class="btn btn-sm btn-outline-info">Edit Task</button>
+                                 <button class="btn btn-dark" @click="exportTask(task[0])" class="btn btn-sm btn-outline-danger">Export Task</button>
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+                  <button class="btn btn-dark" @click="deleteList(list[0])" class="btn btn-sm btn-outline-danger">Delete List</button>
+                  <button class="btn btn-dark" @click="editList(list[0])" class="btn btn-sm btn-outline-info">Edit List</button>
+               </div>
+            </div>
+         </div>
+       </div>
+
+
+
+               <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+               <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+               <script type="application/javascript" src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+               <script type="application/javascript" src="../static/script.js"></script>
+
+   </body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+      <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+      <title>Kanban App</title>
+   </head>
+   <body>
+      <div class="container">
+         <div class="row">
+            <div class="col-md-12 mt-5">
+               <h1 class="text-center">Progress Report</h1>
+               <hr>
+            </div>
+          </div>
+        </div>
+
+            <div class="row">
+            {% for url in images %}
+              <div class="col-xl">
+              <img src="{{ url }}" style="height: 100%; width: 100%; object-fit: contain"/>
+            </div>
+              {% endfor %}
+            </div>
+
+
+
+
+            <p>
+              <hr>
+            <h2 class="text-center"> Tasks past deadline</h2>
+            <div class="row">
+              <ul>
+            {% for past_deadline_in_this_list in past_deadline %}
+            <li>
+              {% for row in past_deadline_in_this_list %}
+              <h5 class="text-center"> {{ row[3] }} </h5>
+              <div class="col-xl">
+              <p class="text-center"><b>Task: </b>{{ row[0] }}
+              <p class="text-center"><b>Description: </b>{{ row[1] }}
+              <p class="text-center"><b>Deadline: </b>{{ row[2] }}
+            </div>
+            {% endfor %}
+          </li>
+          <br>
+              {% endfor %}
+            </ul>
+            </div>
+
+
+
+            <p>
+              <hr>
+            <h2 class="text-center">Completed tasks</h2>
+            <div class="row">
+              <ul>
+            {% for completed_in_this_list in completed_tasks %}
+            <li>
+              {% for row in completed_in_this_list %}
+              <h5 class="text-center"> {{ row[3] }} </h5>
+              <div class="col-xl">
+              <p class="text-center"><b>Task: </b>{{ row[0] }}
+              <p class="text-center"><b>Description: </b>{{ row[1] }}
+              <p class="text-center"><b>Deadline: </b>{{ row[2] }}
+            </div>
+            {% endfor %}
+          </li>
+          <br>
+              {% endfor %}
+            </ul>
+            </div>
+
+
+   </body>
+</html>
